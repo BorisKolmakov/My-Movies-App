@@ -102,23 +102,19 @@ export default class App extends Component {
 
   createGuestSession() {
     if (Date.parse(localStorage.getItem('expires_at')) < Date.now() || !localStorage.getItem('expires_at')) {
-      try {
-        this.mapiService
-          .createGuestSession()
-          .then((result) => {
-            this.setState({
-              guestSessionId: result.guest_session_id,
-            })
-            localStorage.clear()
-            localStorage.setItem('guest_session_id', result.guest_session_id)
-            localStorage.setItem('expires_at', result.expires_at)
+      this.mapiService
+        .createGuestSession()
+        .then((result) => {
+          this.setState({
+            guestSessionId: result.guest_session_id,
           })
-          .catch((err) => {
-            this.onError(err)
-          })
-      } catch (err) {
-        this.onError(err)
-      }
+          localStorage.clear()
+          localStorage.setItem('guest_session_id', result.guest_session_id)
+          localStorage.setItem('expires_at', result.expires_at)
+        })
+        .catch((err) => {
+          this.onError(err)
+        })
     } else {
       this.setState({
         guestSessionId: localStorage.getItem('guest_session_id'),
@@ -176,11 +172,14 @@ export default class App extends Component {
   }
 
   getGenresList() {
-    this.mapiService.getGenres().then(({ genres }) => {
-      this.setState({
-        genresList: genres,
+    this.mapiService
+      .getGenres()
+      .then(({ genres }) => {
+        this.setState({
+          genresList: genres,
+        })
       })
-    })
+      .catch((err) => this.onError(err))
   }
 
   networkError = (err) => {
